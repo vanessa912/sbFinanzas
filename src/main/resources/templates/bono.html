@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+	<head>
+		<meta charset="ISO-8859-1"></meta>
+	
+		<title>Bono</title>
+	
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+		<link	href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css"
+				rel="stylesheet" id="bootstrap-css">
+		</link>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+
+	</head>
+	
+	<body>
+	
+		<div th:replace="fragments/header :: header"></div>
+		
+		<div class="container">
+												
+			<form th:action="@{/bono/registrar}" method="post" th:object="${bono}" enctype="multipart/form-data">
+			
+				<div class="form-group">
+					
+					<label for="idBono">C&OacuteDIGO:</label> 
+					<input type="text" class="form-control" th:field="*{idBono}"></input>
+
+					<div class="form-group">
+					
+						<label for="empresa" class=" col-sm-2 col-form-label">Empresa: </label>
+						<select class="form-control" th:field="*{empresa.idEmpresa}">
+							<option th:each="e: ${listaEmpresas}" th:value="${e.idEmpresa}"
+									th:text="${e.nombreEmpresa}"
+									th:selected="(${e.idEmpresa} == *{empresa.idEmpresa})">
+							</option>
+						</select>
+						
+						<label for="valornominal">Valor nominal:</label> 
+						<input type="number" placeholder="1.0" step="0.01" th:field="*{valornominal}" class="form-control" id="valornominal"></input>
+						
+						<label 	for="valorcomercial">Valor comercial:</label> 
+						<input type="number" placeholder="1.0" step="0.01" th:field="*{valorcomercial}" class="form-control" id="valorcomercial"></input>
+						
+						<label 	for="plazo">Plazo (a&ntildeos):</label> 
+						<input type="number" placeholder="1.0" step="0.01" th:field="*{plazo}" class="form-control" id="plazo"></input>
+						
+						<label for="tasa" class=" col-sm-2 col-form-label">Tipo de tasa: </label>
+						<select class="form-control" th:field="*{tasa.idTasa}">
+							<option th:each="e: ${listaTasas}" th:value="${e.idTasa}"
+									th:text="${e.tipoTasa}"
+									th:selected="(${e.idTasa} == *{tasa.idTasa})">
+							</option>
+						</select>
+						
+						
+						<label 	for="tasacupon">Tasa cup&oacuten:</label> 
+						<input type="number" placeholder="1.0" step="0.01" th:field="*{tasaCupon}" class="form-control" id="tasacupon"></input>
+						
+						<label 	for="tasamercado">Tasa mercado:</label> 
+						<input type="number" placeholder="1.0" step="0.01" th:field="*{tasaMercado}" class="form-control" id="tasamercado"></input>
+						
+						<label for="frecuencia" class=" col-sm-2 col-form-label">Frecuencia de pago: </label>
+						<select class="form-control" th:field="*{frecuencia.idFrecuencia}">
+							<option th:each="f: ${listaFrecuencias}" th:value="${f.idFrecuencia}"
+									th:text="${f.tipoFrecuencia}"
+									th:selected="(${f.idFrecuencia} == *{frecuencia.idFrecuencia})">
+							</option>
+						</select>
+						
+						<label for="moneda" class=" col-sm-2 col-form-label">Moneda: </label>
+						<select class="form-control" th:field="*{moneda.idMoneda}">
+							<option th:each="m: ${listaMonedas}" th:value="${m.idMoneda}"
+									th:text="${m.tipoMoneda}"
+									th:selected="(${m.idMoneda} == *{moneda.idMoneda})">
+							</option>
+						</select>	
+						
+					</div>
+
+				</div>
+
+				<button type="submit" class="btn btn-primary">Aceptar</button>
+				<a href="/bono/listar" class="btn btn-danger">Cancelar</a>
+
+			</form>
+		</div>
+		
+		<div th:replace="fragments/footer :: footer"></div>
+
+	</body>
+	
+</html>

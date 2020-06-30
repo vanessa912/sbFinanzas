@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8"></meta>
+		<title>Método aleman</title>
+		<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.16.0/jquery.validate.js">
+		</script>
+		<link 	href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css"
+				rel="stylesheet" id="bootstrap-css">
+		</link>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+		<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+	</head>
+	<body>
+		<div th:replace="fragments/header :: header"></div>
+		<div class="container">
+			<form id="myform">
+				<div class="row clearfix">
+					<div class="col-md-12 column">MÉTODO ALEMÁN
+						<table class="table table-bordered table-hover table-striped" id="tab_logic">
+							<thead>
+								<tr>
+									<th class="text-center">TEP</th>
+									<th class="text-center">GASTOS EMISOR</th>
+									<th class="text-center">GASTOS BONISTA</th>
+									<th class="text-center">NÚMERO DE PAGOS</th>
+									<th class="text-center">AMORTIZACIÓN</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="p: ${listaBonos}">
+									<td align="center" th:text="${#numbers.formatDecimal(p.tep(),1,'POINT',6,'COMMA') + ' %'}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(p.gastosemisor() ,1,'POINT',2,'COMMA') + ' %'}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(p.gastosbonista() ,1,'POINT',2,'COMMA') + ' %'}"></td>
+									<td align="center" th:text="${(p.numperiodo())}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(p.amortizacion() ,1,'POINT',2,'COMMA')}"></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="container">
+			<form id="myform">
+				<div class="row clearfix">
+					<div class="col-md-12 column">Flujo de caja
+						<table class="table table-bordered table-hover table-striped" id="tab_logic">
+							<thead>
+								<tr>
+									<th class="text-center">NRO.</th>
+									<th class="text-center">VALOR NOMINAL</th>
+									<th class="text-center">INTERES</th>
+									<th class="text-center">AMORTIZACIÓN</th>
+									<th class="text-center">PRIMA</th>
+									<th class="text-center">CUOTA BONISTA</th>
+									<th class="text-center">CUOTA EMISOR</th>
+								</tr>
+							</thead>
+							<!-- CUOTA 0 -->
+							<tbody>	
+									<tr th:each="p: ${listaBonos}">
+									<td align="center" th:text="${0}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(p.valornominal,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal((p.valorcomercial*(1+p.gastosbonista()/100))*-1,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal((p.valorcomercial*(1-p.gastosemisor()/100))*-1,1,'POINT',2,'COMMA')}"></td>									
+									</tr>
+							</tbody> 
+							
+					<!-- CUOTA 1 -->
+							<tbody>	
+									<tr th:each="p: ${listaBonos}">
+									<td align="center" th:text="${1}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(p.saldo(1),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(p.cuponal(1),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(p.amortizacion(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(p.cuota(1),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(p.cuota(1),1,'POINT',2,'COMMA')}"></td>
+									</tr>
+									
+							</tbody> 
+					<!-- CUOTA 2 -->
+					
+							<tbody>	
+									<tr th:each="bono, p: ${listaBonos}" th:if="${2>bono.numperiodo()}">
+									<td align="center" th:text="${2}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${2<bono.numperiodo()}">
+									<td align="center" th:text="${2}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.saldo(2),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuponal(2),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.amortizacion(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuota(2),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuota(2),1,'POINT',2,'COMMA')}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${2==bono.numperiodo()}">
+									<td align="center" th:text="${2}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.saldo(2),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuponal(2),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.amortizacion(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.primaal(2),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.ultimocuotaaleman(2),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.ultimocuotaaleman(2),1,'POINT',2,'COMMA')}"></td>
+									</tr>
+							</tbody> 
+							
+					<!-- CUOTA 3 -->
+							
+							<tbody>	
+									<tr th:each="bono, p: ${listaBonos}" th:if="${3>bono.numperiodo()}">
+									<td align="center" th:text="${3}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${3<bono.numperiodo()}">
+									<td align="center" th:text="${3}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.saldo(3),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuponal(3),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.amortizacion(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuota(3),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuota(3),1,'POINT',2,'COMMA')}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${3==bono.numperiodo()}">
+									<td align="center" th:text="${3}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.saldo(3),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuponal(3),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.amortizacion(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.primaal(3),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.ultimocuotaaleman(3),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.ultimocuotaaleman(3),1,'POINT',2,'COMMA')}"></td>
+									</tr>
+									
+							</tbody> 
+					<!-- CUOTA 4 -->
+							<tbody>	
+									<tr th:each="bono, p: ${listaBonos}" th:if="${4>bono.numperiodo()}">
+									<td align="center" th:text="${4}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${4<bono.numperiodo()}">
+									<td align="center" th:text="${4}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.saldo(4),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuponal(4),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.amortizacion(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuota(4),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuota(4),1,'POINT',2,'COMMA')}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${4==bono.numperiodo()}">
+									<td align="center" th:text="${4}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.saldo(4),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuponal(4),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.amortizacion(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.primaal(4),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.ultimocuotaaleman(4),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.ultimocuotaaleman(4),1,'POINT',2,'COMMA')}"></td>
+									</tr>
+							</tbody> 
+							
+							<!-- CUOTA 5 -->
+							
+							<tbody>	
+									<tr th:each="bono, p: ${listaBonos}" th:if="${5>bono.numperiodo()}">
+									<td align="center" th:text="${5}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${5<bono.numperiodo()}">
+									<td align="center" th:text="${5}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.saldo(5),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuponal(5),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.amortizacion(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuota(5),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuota(5),1,'POINT',2,'COMMA')}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${5==bono.numperiodo()}">
+									<td align="center" th:text="${5}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.saldo(5),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuponal(5),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.amortizacion(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.primaal(5),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.ultimocuotaaleman(5),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.ultimocuotaaleman(5),1,'POINT',2,'COMMA')}"></td>
+									</tr>
+							</tbody> 
+							
+							<!-- CUOTA 6 -->
+							
+							<tbody>	
+									<tr th:each="bono, p: ${listaBonos}" th:if="${6>bono.numperiodo()}">
+									<td align="center" th:text="${6}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${6<bono.numperiodo()}">
+									<td align="center" th:text="${6}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.saldo(6),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuponal(6),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.amortizacion(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuota(6),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuota(6),1,'POINT',2,'COMMA')}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${6==bono.numperiodo()}">
+									<td align="center" th:text="${6}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.saldo(6),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuponal(6),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.amortizacion(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.primaal(6),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.ultimocuotaaleman(6),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.ultimocuotaaleman(6),1,'POINT',2,'COMMA')}"></td>
+									</tr>
+							</tbody> 
+							
+							
+							<!-- CUOTA 7 -->
+							
+							<tbody>	
+									<tr th:each="bono, p: ${listaBonos}" th:if="${7>bono.numperiodo()}">
+									<td align="center" th:text="${7}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${7<bono.numperiodo()}">
+									<td align="center" th:text="${7}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.saldo(7),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuponal(7),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.amortizacion(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuota(7),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuota(7),1,'POINT',2,'COMMA')}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${7==bono.numperiodo()}">
+									<td align="center" th:text="${7}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.saldo(7),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuponal(7),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.amortizacion(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.primaal(7),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.ultimocuotaaleman(7),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.ultimocuotaaleman(7),1,'POINT',2,'COMMA')}"></td>
+									</tr>
+							</tbody> 
+							
+							<!-- CUOTA 8 -->
+							
+							<tbody>	
+									<tr th:each="bono, p: ${listaBonos}" th:if="${8>bono.numperiodo()}">
+									<td align="center" th:text="${8}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${8<bono.numperiodo()}">
+									<td align="center" th:text="${8}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.saldo(8),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuponal(8),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.amortizacion(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuota(8),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuota(8),1,'POINT',2,'COMMA')}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${8==bono.numperiodo()}">
+									<td align="center" th:text="${8}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.saldo(8),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuponal(8),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.amortizacion(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.primaal(8),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.ultimocuotaaleman(8),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.ultimocuotaaleman(8),1,'POINT',2,'COMMA')}"></td>
+									</tr>
+							</tbody> 
+							
+							<!-- CUOTA 9 -->
+							
+							<tbody>	
+									<tr th:each="bono, p: ${listaBonos}" th:if="${9>bono.numperiodo()}">
+									<td align="center" th:text="${9}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${9<bono.numperiodo()}">
+									<td align="center" th:text="${9}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.saldo(9),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuponal(9),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.amortizacion(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuota(9),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuota(9),1,'POINT',2,'COMMA')}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${9==bono.numperiodo()}">
+									<td align="center" th:text="${9}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.saldo(9),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuponal(9),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.amortizacion(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.primaal(9),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.ultimocuotaaleman(9),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.ultimocuotaaleman(9),1,'POINT',2,'COMMA')}"></td>
+									</tr>
+							</tbody> 
+							
+							<!-- CUOTA 10 -->
+							
+							<tbody>	
+									<tr th:each="bono, p: ${listaBonos}" th:if="${10>bono.numperiodo()}">
+									<td align="center" th:text="${10}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${10<bono.numperiodo()}">
+									<td align="center" th:text="${10}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.saldo(10),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuponal(10),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.amortizacion(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuota(10),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuota(10),1,'POINT',2,'COMMA')}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${10==bono.numperiodo()}">
+									<td align="center" th:text="${10}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.saldo(10),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuponal(10),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.amortizacion(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.primaal(10),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.ultimocuotaaleman(10),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.ultimocuotaaleman(10),1,'POINT',2,'COMMA')}"></td>
+									</tr>
+							</tbody> 
+							
+							<!-- CUOTA 11 -->
+							
+							<tbody>	
+									<tr th:each="bono, p: ${listaBonos}" th:if="${11>bono.numperiodo()}">
+									<td align="center" th:text="${11}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${11<bono.numperiodo()}">
+									<td align="center" th:text="${11}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.saldo(11),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuponal(11),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.amortizacion(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuota(11),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuota(11),1,'POINT',2,'COMMA')}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${11==bono.numperiodo()}">
+									<td align="center" th:text="${11}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.saldo(11),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuponal(11),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.amortizacion(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.primaal(11),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.ultimocuotaaleman(11),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.ultimocuotaaleman(11),1,'POINT',2,'COMMA')}"></td>
+									</tr>
+							</tbody> 
+							
+							<!-- CUOTA 12 -->
+							<tbody>	
+									<tr th:each="bono, p: ${listaBonos}" th:if="${12>bono.numperiodo()}">
+									<td align="center" th:text="${12}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${12<bono.numperiodo()}">
+									<td align="center" th:text="${12}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.saldo(12),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuponal(12),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.amortizacion(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuota(12),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuota(12),1,'POINT',2,'COMMA')}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${12==bono.numperiodo()}">
+									<td align="center" th:text="${12}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.saldo(12),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuponal(12),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.amortizacion(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.primaal(12),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.ultimocuotaaleman(12),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.ultimocuotaaleman(12),1,'POINT',2,'COMMA')}"></td>
+									</tr>
+							</tbody> 
+							
+							<!-- CUOTA 13 -->
+							
+							<tbody>	
+									<tr th:each="bono, p: ${listaBonos}" th:if="${13>bono.numperiodo()}">
+									<td align="center" th:text="${13}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${13<bono.numperiodo()}">
+									<td align="center" th:text="${13}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.saldo(13),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuponal(13),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.amortizacion(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuota(13),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuota(13),1,'POINT',2,'COMMA')}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${13==bono.numperiodo()}">
+									<td align="center" th:text="${13}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.saldo(13),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuponal(13),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.amortizacion(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.primaal(13),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.ultimocuotaaleman(13),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.ultimocuotaaleman(13),1,'POINT',2,'COMMA')}"></td>
+									</tr>
+									
+							</tbody> 
+							
+							<!-- CUOTA 14 -->
+							
+							<tbody>	
+									<tr th:each="bono, p: ${listaBonos}" th:if="${14>bono.numperiodo()}">
+									<td align="center" th:text="${14}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${14<bono.numperiodo()}">
+									<td align="center" th:text="${14}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.saldo(14),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuponal(14),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.amortizacion(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuota(14),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuota(14),1,'POINT',2,'COMMA')}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${14==bono.numperiodo()}">
+									<td align="center" th:text="${14}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.saldo(14),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuponal(14),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.amortizacion(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.primaal(14),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.ultimocuotaaleman(14),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.ultimocuotaaleman(14),1,'POINT',2,'COMMA')}"></td>
+									</tr>
+									
+							</tbody> 
+							
+							<!-- CUOTA 15 -->
+							
+							<tbody>	
+									<tr th:each="bono, p: ${listaBonos}" th:if="${15>bono.numperiodo()}">
+									<td align="center" th:text="${15}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${15<bono.numperiodo()}">
+									<td align="center" th:text="${15}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.saldo(15),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuponal(15),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.amortizacion(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuota(15),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuota(15),1,'POINT',2,'COMMA')}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${15==bono.numperiodo()}">
+									<td align="center" th:text="${15}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.saldo(15),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.cuponal(15),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.amortizacion(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.primaal(15),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.ultimocuotaaleman(15),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.ultimocuotaaleman(15),1,'POINT',2,'COMMA')}"></td>
+									</tr>
+							</tbody> 
+			
+						</table>
+					</div>
+				</div>
+			</form>
+		</div>
+		
+		<div class="container">
+			<form id="myform">
+				<div class="row clearfix">
+					<div class="col-md-12 column">
+						<table class="table table-bordered table-hover table-striped" id="tab_logic">
+							<thead>
+								<tr>
+									<th class="text-center">TOTAL CUOTAS</th>
+									<th class="text-center">TOTAL INTERESES</th>
+							
+									<th class="text-center">TOTAL AMORTIZACIÓN</th>
+									<th class="text-center">VAN</th>
+									<th class="text-center">TCEA BONISTA</th>
+									<th class="text-center">TCEA EMISOR</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="p: ${listaBonos}">
+									<td align="center" th:text="${#numbers.formatDecimal(p.sumcuota(p.numperiodo()),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(p.sumintereses(p.numperiodo()),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(p.sumamortizacion(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(p.vanaleman(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(p.tceabonal(),1,'POINT',6,'COMMA') + ' %'}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(p.tceaemal(),1,'POINT',6,'COMMA') + ' %'}"></td>
+								
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<div th:replace="fragments/footer :: footer"></div>
+
+	</body>
+	
+</html>

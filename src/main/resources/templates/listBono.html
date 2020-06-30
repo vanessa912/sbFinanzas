@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+	<head>
+		
+		<meta charset="UTF-8"></meta>
+		
+		<title>Bonos</title>
+		
+		<script type="text/javascript"
+			src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.16.0/jquery.validate.js">
+		</script>
+		
+		<link
+			href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css"
+			rel="stylesheet" id="bootstrap-css">
+		</link>
+		
+		<script
+			src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js">
+		</script>
+		
+		<script src="//code.jquery.com/jquery-1.11.1.min.js">
+		</script>
+
+	</head>
+
+	<body>
+	
+		<div th:replace="fragments/header :: header"></div>
+
+		<div class="container">
+			<form id="myform">
+				<div class="row clearfix">
+					<div class="col-md-12 column" >
+						<a  style="border-bottom-color: green" th:href="@{/bono/irRegistrar}" id="add-row" 
+							type="button"
+							class="btn btn-primary btn-md left-block"> <span
+							class="glyphicon glyphicon-plus" ></span> Bonos
+						</a>
+						
+						
+						
+						<table class="table table-bordered table-hover table-striped" id="tab_logic">
+							<thead>
+								<tr>
+									<th class="text-center">CÓDIGO</th>
+									<th class="text-center">EMPRESA</th>
+									<th class="text-center">VALOR NOMINAL</th>
+									<th class="text-center">VALOR COMERCIAL</th>
+									<th class="text-center">PLAZO</th>
+									<th class="text-center">TIPO DE TASA</th>
+									<th class="text-center">TASA CUPÓN</th>
+									<th class="text-center">TASA DE MERCADO</th>
+									<th class="text-center">FRECUENCIA DE PAGO</th>
+									<th class="text-center">MONEDA</th>
+									<th class="text-center">OPERACIÓN</th>
+									<th class="text-center">OPERACIÓN</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="bono: ${listaBonos}">
+									<td th:text="${bono.idBono}"></td>
+									<td th:text="${bono.empresa.nombreEmpresa}"></td>
+									<td th:text="${bono.valornominal}"></td>
+									<td th:text="${bono.valorcomercial}"></td>
+									<td th:text="${bono.plazo}"></td>
+									<td th:text="${bono.tasa.tipoTasa}"></td>
+									<td th:text="${bono.tasaCupon+ ' %'}"></td>
+									<td th:text="${bono.tasaMercado+ ' %'}"></td>
+									<td th:text="${bono.frecuencia.tipoFrecuencia}"></td>
+									<td th:text="${bono.moneda.tipoMoneda}"></td>
+									<td><a th:href="@{/bono/eliminar?id=}+${bono.idBono}">Eliminar</a></td>
+									<td><a th:href="@{'/bono/modificar/' + ${bono.idBono}}">Modificar</a></td>
+								</tr>
+							</tbody>
+						</table>
+											
+					</div>
+				</div>
+			<div th:if="${mensaje}" class="alert alert-danger">
+				<p th:text="${mensaje}"></p>
+			</div>
+		</form>
+	</div>
+	
+	<div th:replace="fragments/footer :: footer"></div>
+
+	</body>
+</html>

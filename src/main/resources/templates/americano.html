@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8"></meta>
+		<title>Método americano</title>
+		<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.16.0/jquery.validate.js">
+		</script>
+		<link 	href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css"
+				rel="stylesheet" id="bootstrap-css">
+		</link>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+		<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+	</head>
+	<body>
+		<div th:replace="fragments/header :: header"></div>
+		<div class="container">
+			<form id="myform">
+				<div class="row clearfix">
+					<div class="col-md-12 column">MÉTODO AMERICANO
+						<table class="table table-bordered table-hover table-striped" id="tab_logic">
+							<thead>
+								<tr>
+									<th class="text-center">TEP</th>
+									<th class="text-center">GASTOS EMISOR</th>
+									<th class="text-center">GASTOS BONISTA</th>
+									<th class="text-center">NÚMERO DE PAGOS</th>
+									
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="p: ${listaBonos}">
+									<td align="center"  th:text="${#numbers.formatDecimal(p.tep(),1,'POINT',6,'COMMA') + ' %'}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(p.gastosemisor() ,1,'POINT',2,'COMMA') + ' %'}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(p.gastosbonista() ,1,'POINT',2,'COMMA') + ' %'}"></td>
+									<td align="center" th:text="${(p.numperiodo())}"></td>
+									
+									
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="container">
+			<form id="myform">
+				<div class="row clearfix">
+					<div class="col-md-12 column">Flujo de caja
+						<table class="table table-bordered table-hover table-striped" id="tab_logic">
+							<thead>
+								<tr>
+									<th class="text-center">NRO.</th>
+									<th class="text-center">VALOR NOMINAL</th>
+									<th class="text-center">INTERES</th>
+									<th class="text-center">PRIMA</th>
+									<th class="text-center">CUOTA BONISTA</th>
+									<th class="text-center">CUOTA EMISOR</th>
+								</tr>
+							</thead>
+							<!-- CUOTA 0 -->
+							<tbody>	
+									<tr th:each="p: ${listaBonos}">
+									<td align="center" th:text="${((p.numperiodo()-(p.numperiodo()+1))*-1)-1}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(p.valornominal,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal((p.valorcomercial*(1+p.gastosbonista()/100))*-1,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal((p.valorcomercial*(1-p.gastosemisor()/100))*-1,1,'POINT',2,'COMMA')}"></td>									
+									</tr>
+									
+							</tbody> 
+							<!-- CUOTA 1 -->
+							<tbody>	
+									<tr th:each="p: ${listaBonos}">
+									<td align="center" th:text="${((p.numperiodo()-(p.numperiodo()+1))*-1)}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(p.valornominal,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(p.valornominal*p.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(p.valornominal*p.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(p.valornominal*p.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									</tr>
+							</tbody> 
+							<!-- CUOTA 2 -->
+							<tbody>	
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+1)}>${bono.numperiodo()}">
+									<td align="center" th:text="${((bono.numperiodo()-(bono.numperiodo()+1))*-1)+1}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+1)}<${bono.numperiodo()}">
+									<td align="center" th:text="${((bono.numperiodo()-(bono.numperiodo()+1))*-1)+1}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+1)}==${bono.numperiodo()}">
+									<td align="center" th:text="${((bono.numperiodo()-(bono.numperiodo()+1))*-1)+1}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal+(bono.valornominal*bono.tep()/100)+bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal+(bono.valornominal*bono.tep()/100)+bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									</tr>
+							</tbody> 
+							<!-- CUOTA 3 -->
+							<tbody>	
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+2)}>${bono.numperiodo()}">
+									<td align="center" th:text="${((bono.numperiodo()-(bono.numperiodo()+1))*-1)+2}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+2)}<${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+2)}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+2)}==${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+2)}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal+(bono.valornominal*bono.tep()/100)+bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal+(bono.valornominal*bono.tep()/100)+bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									</tr>
+							</tbody> 
+					<!-- CUOTA 4 -->
+							<tbody>	
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+3)}>${bono.numperiodo()}">
+									<td align="center" th:text="${((bono.numperiodo()-(bono.numperiodo()+1))*-1)+3}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+3)}<${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+3)}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+3)}==${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+3)}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal+(bono.valornominal*bono.tep()/100)+bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal+(bono.valornominal*bono.tep()/100)+bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									</tr>
+							</tbody> 
+							<!-- CUOTA 5 -->
+							<tbody>	
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+4)}>${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+4)}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+4)}<${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+4)}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									</tr>
+						
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+4)}==${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+4)}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal+(bono.valornominal*bono.tep()/100)+bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal+(bono.valornominal*bono.tep()/100)+bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									</tr>
+							</tbody>
+							
+							<!-- CUOTA 6 -->
+							<tbody>	
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+5)}>${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+5)}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+5)}<${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+5)}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									</tr>
+						
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+5)}==${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+5)}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal+(bono.valornominal*bono.tep()/100)+bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal+(bono.valornominal*bono.tep()/100)+bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									</tr>
+							</tbody>
+							<!-- CUOTA 7 -->
+							<tbody>	
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+6)}>${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+6)}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+6)}<${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+6)}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									</tr>
+						
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+6)}==${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+6)}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal+(bono.valornominal*bono.tep()/100)+bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal+(bono.valornominal*bono.tep()/100)+bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									</tr>
+							</tbody>
+							<!-- CUOTA 8 -->
+							<tbody>	
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+7)}>${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+7)}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+7)}<${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+7)}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									</tr>
+						
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+7)}==${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+7)}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal+(bono.valornominal*bono.tep()/100)+bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal+(bono.valornominal*bono.tep()/100)+bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									</tr>
+							</tbody>
+							<!-- CUOTA 9 -->
+							<tbody>	
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+8)}>${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+8)}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+8)}<${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+8)}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									</tr>
+						
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+8)}==${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+8)}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal+(bono.valornominal*bono.tep()/100)+bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal+(bono.valornominal*bono.tep()/100)+bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									</tr>
+							</tbody>
+							<!-- CUOTA 10 -->
+							<tbody>	
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+9)}>${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+9)}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+9)}<${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+9)}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									</tr>
+						
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+9)}==${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+9)}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal+(bono.valornominal*bono.tep()/100)+bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal+(bono.valornominal*bono.tep()/100)+bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									</tr>
+							</tbody>
+							<!-- CUOTA 11 -->
+							<tbody>	
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+10)}>${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+10)}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+10)}<${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+10)}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									</tr>
+						
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+10)}==${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+10)}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal+(bono.valornominal*bono.tep()/100)+bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal+(bono.valornominal*bono.tep()/100)+bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									</tr>
+							</tbody>
+							
+							<!-- CUOTA 12 -->
+							<tbody>	
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+11)}>${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+11)}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+11)}<${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+11)}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									</tr>
+						
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+11)}==${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+11)}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal+(bono.valornominal*bono.tep()/100)+bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal+(bono.valornominal*bono.tep()/100)+bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									</tr>
+							</tbody>
+							<!-- CUOTA 13 -->
+							<tbody>	
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+12)}>${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+12)}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+12)}<${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+12)}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									</tr>
+						
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+12)}==${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+12)}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal+(bono.valornominal*bono.tep()/100)+bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal+(bono.valornominal*bono.tep()/100)+bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									</tr>
+							</tbody>
+							<!-- CUOTA 14 -->
+							<tbody>	
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+13)}>${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+13)}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+13)}<${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+13)}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									</tr>
+						
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+13)}==${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+13)}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal+(bono.valornominal*bono.tep()/100)+bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal+(bono.valornominal*bono.tep()/100)+bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									</tr>
+							</tbody>
+							<!-- CUOTA 15 -->
+							<tbody>	
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+14)}>${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+14)}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									</tr>
+									
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+14)}<${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+14)}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${0.00}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									</tr>
+						
+									<tr th:each="bono, p: ${listaBonos}" th:if="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+14)}==${bono.numperiodo()}">
+									<td align="center" th:text="${(((bono.numperiodo()-(bono.numperiodo()+1))*-1)+14)}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.tep()/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal+(bono.valornominal*bono.tep()/100)+bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									<td align="center" th:text="${#numbers.formatDecimal(bono.valornominal+(bono.valornominal*bono.tep()/100)+bono.valornominal*bono.empresa.prima/100,1,'POINT',2,'COMMA')}"></td>
+									</tr>
+							</tbody>
+							
+							
+
+								
+						
+
+
+
+
+
+						</table>
+					</div>
+				</div>
+			</form>
+		</div>
+		
+		<div class="container">
+			<form id="myform">
+				<div class="row clearfix">
+					<div class="col-md-12 column">
+						<table class="table table-bordered table-hover table-striped" id="tab_logic">
+							<thead>
+								<tr>
+									<th class="text-center">TOTAL INTERESES</th>
+									<th class="text-center">VAN</th>
+									<th class="text-center">TCEA BONISTA</th>
+									<th class="text-center">TCEA EMISOR</th>
+								
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="p: ${listaBonos}">
+									<td align="center" th:text="${#numbers.formatDecimal(p.suminteresam(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center"  th:text="${#numbers.formatDecimal(p.vanamericano(),1,'POINT',2,'COMMA')}"></td>
+									<td align="center"  th:text="${#numbers.formatDecimal(p.tceabonamericano(),1,'POINT',6,'COMMA') + ' %'}"></td>
+									<td align="center"  th:text="${#numbers.formatDecimal(p.tceaemamericano(),1,'POINT',6,'COMMA') + ' %'}"></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</form>
+		</div>
+		
+
+		<div th:replace="fragments/footer :: footer"></div>
+
+	</body>
+	
+</html>

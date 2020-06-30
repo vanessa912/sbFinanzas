@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+	<head>
+		<meta charset="ISO-8859-1"></meta>
+	
+		<title>Moneda</title>
+	
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+		<link	href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css"
+				rel="stylesheet" id="bootstrap-css">
+		</link>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+
+	</head>
+	
+	<body>
+	
+		<div th:replace="fragments/header :: header"></div>
+		
+		<div class="container">
+												
+			<form th:action="@{/moneda/registrar}" method="post" th:object="${moneda}" enctype="multipart/form-data">
+			
+				<div class="form-group">
+					
+					<label for="idMoneda">C&OacuteDIGO:</label> 
+					<input type="text" class="form-control" th:field="*{idMoneda}"></input>
+
+					<div class="form-group">
+						
+						<label for="tipoMoneda">Tipo de Moneda:</label> 
+						<input type="text" th:field="*{tipoMoneda}" class="form-control" id="tipoMoneda"></input>
+						
+						<label for="signoMoneda">Notaci&oacuten:</label> 
+						<input type="text" th:field="*{signoMoneda}" class="form-control" id="signoMoneda"></input>
+						
+						
+					</div>
+
+				</div>
+
+				<button type="submit" class="btn btn-primary">Aceptar</button>
+				<a href="/moneda/listar" class="btn btn-danger">Cancelar</a>
+
+			</form>
+		</div>
+		
+		<div th:replace="fragments/footer :: footer"></div>
+
+	</body>
+	
+</html>

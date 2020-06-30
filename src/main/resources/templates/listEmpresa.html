@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+	<head>
+		
+		<meta charset="UTF-8"></meta>
+		
+		<title>Empresa</title>
+		
+		<script type="text/javascript"
+			src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.16.0/jquery.validate.js">
+		</script>
+		
+		<link
+			href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css"
+			rel="stylesheet" id="bootstrap-css">
+		</link>
+		
+		<script
+			src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js">
+		</script>
+		
+		<script src="//code.jquery.com/jquery-1.11.1.min.js">
+		</script>
+
+	</head>
+
+	<body>
+	
+		<div th:replace="fragments/header :: header"></div>
+
+		<div class="container">
+			<form id="myform">
+				<div class="row clearfix">
+					<div class="col-md-12 column" >
+						
+						<a  style="border-bottom-color: green" th:href="@{/empresa/irRegistrar}" id="add-row" 
+							type="button"
+							class="btn btn-primary btn-md left-block"> <span
+							class="glyphicon glyphicon-plus" ></span> Empresa
+						</a>
+						
+						
+						
+						<table class="table table-bordered table-hover table-striped" id="tab_logic">
+							<thead>
+								<tr>
+									<th class="text-center">CODIGO</th>
+									<th class="text-center">NOMBRE</th>
+									<th class="text-center">RUC</th>
+									<th class="text-center">PRIMA</th>
+									<th class="text-center">COLOCACIÓN</th>
+									<th class="text-center">ESTRUCTURACIÓN</th>
+									<th class="text-center">FLOTACIÓN</th>
+									<th class="text-center">CAVALI</th>
+									<th class="text-center">OPERACIÓN</th>
+									<th class="text-center">OPERACIÓN</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="empresa: ${listaEmpresas}">
+									<td th:text="${empresa.idEmpresa}"></td>
+									<td th:text="${empresa.nombreEmpresa}"></td>
+									<td th:text="${empresa.rucEmpresa}"></td>
+									<td th:text="${empresa.prima}"></td>
+									<td th:text="${empresa.colocacion + ' %'}"></td>
+									<td th:text="${empresa.estructuracion+ ' %'}"></td>
+									<td th:text="${empresa.flotacion+ ' %'}"></td>
+									<td th:text="${empresa.cavali+ ' %'}"></td>
+									<td><a th:href="@{/empresa/eliminar?id=}+${empresa.idEmpresa}">Eliminar</a></td>
+									<td><a th:href="@{'/empresa/modificar/' + ${empresa.idEmpresa}}">Modificar</a></td>
+								</tr>
+							</tbody>
+						</table>
+											
+					</div>
+				</div>
+			<div th:if="${mensaje}" class="alert alert-danger">
+				<p th:text="${mensaje}"></p>
+			</div>
+		</form>
+	</div>
+	
+	<div th:replace="fragments/footer :: footer"></div>
+
+	</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+	<head>
+		<meta charset="ISO-8859-1"></meta>
+	
+		<title>Registrar empresa</title>
+	
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+		<link	href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css"
+				rel="stylesheet" id="bootstrap-css">
+		</link>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+
+	</head>
+	
+	<body>
+	
+		<div th:replace="fragments/header :: header"></div>
+		
+		<div class="container">
+												
+			<form th:action="@{/empresa/registrar}" method="post" th:object="${empresa}" enctype="multipart/form-data">
+			
+				<div class="form-group">
+					
+					<label for="idempresa">C&OacuteDIGO:</label> 
+					<input type="text" class="form-control" th:field="*{idEmpresa}"></input>
+
+					<div class="form-group">
+						
+						<label for="nombre">Nombre:</label> 
+						<input type="text" th:field="*{nombreEmpresa}" class="form-control" id="nombre"></input>
+						
+						<div 	class="alert alert-danger" th:if="${#fields.hasErrors('nombreEmpresa')}"
+								th:errors="*{nombreEmpresa}">
+						</div>
+						
+						<label 	for="rucEmpresa">RUC:</label> 
+						<input type="text" th:field="*{rucEmpresa}" class="form-control" id="rucEmpresa"></input>
+						
+						<label 	for="prima">Prima:</label> 
+						<input type="number" placeholder="1.0" step="0.01" th:field="*{prima}" class="form-control" id="prima"></input>
+						
+						<label 	for="colocacion">Colocaci&oacuten:</label> 
+						<input type="number" placeholder="1.0" step="0.01" th:field="*{colocacion}" class="form-control" id="colocacion"></input>
+						
+						<label 	for="estructuracion">Estructuraci&oacuten:</label> 
+						<input type="number" placeholder="1.0" step="0.01" th:field="*{estructuracion}" class="form-control" id="estructuracion"></input>
+						
+						<label 	for="flotacion">Flotaci&oacuten:</label> 
+						<input type="number" placeholder="1.0" step="0.01" th:field="*{flotacion}" class="form-control" id="flotacion"></input>
+						
+						<label 	for="cavali">Cavali:</label> 
+						<input type="number" placeholder="1.0" step="0.01" th:field="*{cavali}" class="form-control" id="cavali"></input>	
+						
+					</div>
+
+				</div>
+
+				<button type="submit" class="btn btn-primary">Aceptar</button>
+				<a href="/empresa/listar" class="btn btn-danger">Cancelar</a>
+
+			</form>
+		</div>
+		
+		<div th:replace="fragments/footer :: footer"></div>
+
+	</body>
+	
+</html>
